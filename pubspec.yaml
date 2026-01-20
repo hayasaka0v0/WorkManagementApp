@@ -1,0 +1,28 @@
+name: learning
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dartz: ^0.10.1
+  supabase_flutter: ^2.9.0
+  flutter_bloc: ^8.1.6
+  get_it: ^8.0.2
+  equatable: ^2.0.7
+  flutter_dotenv: ^5.1.0
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env  
