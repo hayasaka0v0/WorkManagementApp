@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:learning/features/auth/presentation/pages/signup_page.dart';
+import 'package:learning/features/auth/presentation/widgets/auth_button.dart';
 import 'package:learning/features/auth/presentation/widgets/auth_field.dart';
-import 'package:learning/features/tasks/presentation/pages/task_list_page.dart';
+import 'package:learning/features/home/presentation/pages/home_page.dart';
 
 /// Login page for user authentication
 class LoginPage extends StatefulWidget {
@@ -50,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
             );
           } else if (state is AuthAuthenticated) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const TaskListPage()),
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         },
@@ -84,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                       'Sign in to continue',
                       style: Theme.of(
                         context,
-                      ).textTheme.bodyLarge?.copyWith(color: Colors.grey[400]),
+                      ).textTheme.bodyLarge?.copyWith(color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
@@ -121,27 +122,10 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 24),
 
                     // Login Button
-                    ElevatedButton(
-                      onPressed: isLoading ? null : _login,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                    AuthButton(
+                      text: 'Login',
+                      onPressed: _login,
+                      isLoading: isLoading,
                     ),
                     const SizedBox(height: 16),
 
@@ -157,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: isLoading
                               ? null
                               : () {
-                                  Navigator.of(context).push(
+                                  Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                       builder: (_) => const SignupPage(),
                                     ),

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart' hide Task;
 import 'package:learning/core/error/failures.dart';
 import 'package:learning/core/usecase/usecase.dart';
-import 'package:learning/features/tasks/domain/entities/task.dart';
-import 'package:learning/features/tasks/domain/repositories/task_repository.dart';
+import 'package:learning/features/task/domain/entities/task.dart';
+import 'package:learning/features/task/domain/repositories/task_repository.dart';
 
 /// Use case for updating an existing task
 class UpdateTask implements UseCase<Task, Task> {

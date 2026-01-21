@@ -1,4 +1,4 @@
-import 'package:learning/features/tasks/data/models/task_model.dart';
+import 'package:learning/features/task/data/models/task_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Abstract interface for task remote data source

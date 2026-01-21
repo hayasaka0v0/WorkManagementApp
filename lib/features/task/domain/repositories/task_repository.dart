@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart' hide Task;
 import 'package:learning/core/error/failures.dart';
-import 'package:learning/features/tasks/domain/entities/task.dart';
+import 'package:learning/features/task/domain/entities/task.dart';
 
 /// Repository interface for task operations
 /// This defines the contract that the data layer must implement

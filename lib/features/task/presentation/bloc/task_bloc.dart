@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning/core/usecase/usecase.dart';
-import 'package:learning/features/tasks/domain/entities/task.dart';
-import 'package:learning/features/tasks/domain/usecases/create_task.dart';
-import 'package:learning/features/tasks/domain/usecases/delete_task.dart';
-import 'package:learning/features/tasks/domain/usecases/get_tasks.dart';
-import 'package:learning/features/tasks/domain/usecases/update_task.dart';
+import 'package:learning/features/task/domain/entities/task.dart';
+import 'package:learning/features/task/domain/usecases/create_task.dart';
+import 'package:learning/features/task/domain/usecases/delete_task.dart';
+import 'package:learning/features/task/domain/usecases/get_tasks.dart';
+import 'package:learning/features/task/domain/usecases/update_task.dart';
 
 part 'task_event.dart';
 part 'task_state.dart';

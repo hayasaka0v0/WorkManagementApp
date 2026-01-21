@@ -26,31 +26,6 @@ class AuthField extends StatelessWidget {
       validator: validator,
       decoration: InputDecoration(
         hintText: hintText,
-        filled: true,
-        fillColor: Colors.grey[850],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[700]!),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
-            width: 2,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
       ),
     );
   }

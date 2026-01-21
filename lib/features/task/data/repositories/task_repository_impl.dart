@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart' hide Task;
 import 'package:learning/core/error/failures.dart';
-import 'package:learning/features/tasks/data/datasources/task_remote_data_source.dart';
-import 'package:learning/features/tasks/data/models/task_model.dart';
-import 'package:learning/features/tasks/domain/entities/task.dart';
-import 'package:learning/features/tasks/domain/repositories/task_repository.dart';
+import 'package:learning/features/task/data/datasources/task_remote_data_source.dart';
+import 'package:learning/features/task/data/models/task_model.dart';
+import 'package:learning/features/task/domain/entities/task.dart';
+import 'package:learning/features/task/domain/repositories/task_repository.dart';
 
 /// Implementation of TaskRepository
 class TaskRepositoryImpl implements TaskRepository {

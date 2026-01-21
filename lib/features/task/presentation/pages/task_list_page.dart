@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning/core/di/injection_container.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:learning/features/auth/presentation/pages/login_page.dart';
-import 'package:learning/features/tasks/presentation/bloc/task_bloc.dart';
-import 'package:learning/features/tasks/presentation/pages/task_form_page.dart';
-import 'package:learning/features/tasks/presentation/widgets/empty_tasks_widget.dart';
-import 'package:learning/features/tasks/presentation/widgets/task_card.dart';
+import 'package:learning/features/task/presentation/bloc/task_bloc.dart';
+import 'package:learning/features/task/presentation/pages/task_form_page.dart';
+import 'package:learning/features/task/presentation/widgets/empty_tasks_widget.dart';
+import 'package:learning/features/task/presentation/widgets/task_card.dart';
 
 /// Task list page - displays all tasks
 class TaskListPage extends StatelessWidget {
@@ -29,7 +29,6 @@ class TaskListPage extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             title: const Text('My Tasks'),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             actions: [
               IconButton(
                 icon: const Icon(Icons.logout),

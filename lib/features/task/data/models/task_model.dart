@@ -1,4 +1,4 @@
-import 'package:learning/features/tasks/domain/entities/task.dart';
+import 'package:learning/features/task/domain/entities/task.dart';
 
 /// Task model for data layer - handles JSON serialization
 class TaskModel extends Task {

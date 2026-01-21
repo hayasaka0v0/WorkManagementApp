@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:learning/features/auth/presentation/pages/login_page.dart';
+import 'package:learning/features/auth/presentation/widgets/auth_button.dart';
 import 'package:learning/features/auth/presentation/widgets/auth_field.dart';
-import 'package:learning/features/tasks/presentation/pages/task_list_page.dart';
+import 'package:learning/features/task/presentation/pages/task_list_page.dart';
 
 /// Signup page for user registration
 class SignupPage extends StatefulWidget {
@@ -34,11 +36,6 @@ class _SignupPageState extends State<SignupPage> {
       final password = _passwordController.text.trim();
       final phoneNumber = _phoneNumberController.text.trim();
 
-      print('🔵 Signup button pressed');
-      print('🔵 Email: $email');
-      print('🔵 Password length: ${password.length}');
-      print('🔵 Phone: $phoneNumber');
-
       context.read<AuthBloc>().add(
         AuthSignupRequested(
           email: email,
@@ -52,10 +49,6 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Account'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
@@ -95,7 +88,7 @@ class _SignupPageState extends State<SignupPage> {
                       'Create your account to get started',
                       style: Theme.of(
                         context,
-                      ).textTheme.bodyLarge?.copyWith(color: Colors.grey[400]),
+                      ).textTheme.bodyLarge?.copyWith(color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
@@ -163,27 +156,10 @@ class _SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 24),
 
                     // Signup Button
-                    ElevatedButton(
-                      onPressed: isLoading ? null : _signup,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                    AuthButton(
+                      text: 'Sign Up',
+                      onPressed: _signup,
+                      isLoading: isLoading,
                     ),
                     const SizedBox(height: 16),
 
@@ -195,14 +171,18 @@ class _SignupPageState extends State<SignupPage> {
                           'Already have an account? ',
                           style: TextStyle(color: Colors.grey[400]),
                         ),
-                        TextButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  Navigator.of(context).pop();
-                                },
-                          child: const Text(
-                            'Login',
+                          TextButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (_) => const LoginPage(),
+                                      ),
+                                    );
+                                  },
+                            child: const Text(
+                              'Login',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),

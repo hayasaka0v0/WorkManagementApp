@@ -8,14 +8,14 @@ import 'package:learning/features/auth/domain/usecases/login.dart';
 import 'package:learning/features/auth/domain/usecases/logout.dart';
 import 'package:learning/features/auth/domain/usecases/signup.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:learning/features/tasks/data/datasources/task_remote_data_source.dart';
-import 'package:learning/features/tasks/data/repositories/task_repository_impl.dart';
-import 'package:learning/features/tasks/domain/repositories/task_repository.dart';
-import 'package:learning/features/tasks/domain/usecases/create_task.dart';
-import 'package:learning/features/tasks/domain/usecases/delete_task.dart';
-import 'package:learning/features/tasks/domain/usecases/get_tasks.dart';
-import 'package:learning/features/tasks/domain/usecases/update_task.dart';
-import 'package:learning/features/tasks/presentation/bloc/task_bloc.dart';
+import 'package:learning/features/task/data/datasources/task_remote_data_source.dart';
+import 'package:learning/features/task/data/repositories/task_repository_impl.dart';
+import 'package:learning/features/task/domain/repositories/task_repository.dart';
+import 'package:learning/features/task/domain/usecases/create_task.dart';
+import 'package:learning/features/task/domain/usecases/delete_task.dart';
+import 'package:learning/features/task/domain/usecases/get_tasks.dart';
+import 'package:learning/features/task/domain/usecases/update_task.dart';
+import 'package:learning/features/task/presentation/bloc/task_bloc.dart';
 
 /// Service locator instance
 final sl = GetIt.instance;

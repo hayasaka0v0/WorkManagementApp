@@ -5,7 +5,8 @@ import 'package:learning/core/network/supabase_client.dart';
 import 'package:learning/core/theme/theme.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:learning/features/auth/presentation/pages/login_page.dart';
-import 'package:learning/features/tasks/presentation/pages/task_list_page.dart';
+import 'package:learning/features/home/presentation/pages/home_page.dart';
+import 'package:learning/features/task/presentation/pages/task_list_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,24 +26,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<AuthBloc>()..add(AuthCheckRequested()),
+      create: (_) => sl<AuthBloc>(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Task Manager',
-        theme: AppTheme.darkThemeMode,
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is AuthLoading || state is AuthInitial) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            } else if (state is AuthAuthenticated) {
-              return const TaskListPage();
-            } else {
-              return const LoginPage();
-            }
-          },
-        ),
+        theme: AppTheme.lightThemeMode,
+        home:const HomePage()
       ),
     );
   }

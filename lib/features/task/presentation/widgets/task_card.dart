@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:learning/features/tasks/domain/entities/task.dart';
+import 'package:learning/features/task/domain/entities/task.dart';
 
 /// Widget to display a single task card
 class TaskCard extends StatelessWidget {

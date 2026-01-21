@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:learning/features/tasks/domain/entities/task.dart';
-import 'package:learning/features/tasks/presentation/bloc/task_bloc.dart';
+import 'package:learning/features/task/domain/entities/task.dart';
+import 'package:learning/features/task/presentation/bloc/task_bloc.dart';
 
 /// Task form page - for creating and editing tasks
 class TaskFormPage extends StatefulWidget {
