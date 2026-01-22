@@ -31,7 +31,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Task Manager',
         theme: AppTheme.lightThemeMode,
-        home:const HomePage()
+        home:const HomePage(),
+        
+        
       ),
     );
   }
