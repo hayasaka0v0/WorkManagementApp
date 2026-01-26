@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learning/features/chat/presentation/widgets/chat_item_tile.dart';
-import 'package:learning/features/chat/presentation/pages/chat_new_chat.dart';
-import 'package:learning/features/chat/presentation/pages/chat_new_group_chat.dart';
+import 'package:learning/features/chat/presentation/pages/chat_new_contact.dart';
+import 'package:learning/features/chat/presentation/pages/chat_new_group_chat.dart';  
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -75,7 +75,6 @@ class ChatPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'chat_fab',
         onPressed: () {
           showModalBottomSheet(
             context: context,
@@ -102,9 +101,7 @@ class ChatPage extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ChatNewChatPage(),
-                          ),
+                          MaterialPageRoute(builder: (context) =>  NewContact()),
                         );
                       },
                     ),
@@ -121,9 +118,7 @@ class ChatPage extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ChatNewGroupChatPage(),
-                          ),
+                          MaterialPageRoute(builder: (context) =>  ChatNewGroupChatPage()),
                         );
                       },
                     ),
