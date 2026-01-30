@@ -4,9 +4,7 @@ import 'package:learning/core/di/injection_container.dart';
 import 'package:learning/core/network/supabase_client.dart';
 import 'package:learning/core/theme/theme.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:learning/features/auth/presentation/pages/login_page.dart';
 import 'package:learning/features/home/presentation/pages/home_page.dart';
-import 'package:learning/features/task/presentation/pages/task_list_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

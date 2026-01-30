@@ -15,11 +15,29 @@ class LoadTasksEvent extends TaskEvent {}
 class CreateTaskEvent extends TaskEvent {
   final String title;
   final String description;
+  final String companyId;
+  final DateTime dueDate;
+  final TaskPriority priority;
+  final String? assigneeId;
 
-  const CreateTaskEvent({required this.title, required this.description});
+  const CreateTaskEvent({
+    required this.title,
+    required this.description,
+    required this.companyId,
+    required this.dueDate,
+    required this.priority,
+    this.assigneeId,
+  });
 
   @override
-  List<Object?> get props => [title, description];
+  List<Object?> get props => [
+    title,
+    description,
+    companyId,
+    dueDate,
+    priority,
+    assigneeId,
+  ];
 }
 
 /// Event to update an existing task

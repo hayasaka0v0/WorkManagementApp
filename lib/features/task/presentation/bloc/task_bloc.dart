@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning/core/usecase/usecase.dart';
-import 'package:learning/features/task/domain/entities/task.dart';
+import 'package:learning/features/task/domain/entities/task_entity.dart';
 import 'package:learning/features/task/domain/usecases/create_task.dart';
 import 'package:learning/features/task/domain/usecases/delete_task.dart';
 import 'package:learning/features/task/domain/usecases/get_tasks.dart';
@@ -52,7 +52,14 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(TaskLoading());
 
     final result = await createTask(
-      CreateTaskParams(title: event.title, description: event.description),
+      CreateTaskParams(
+        title: event.title,
+        description: event.description,
+        companyId: event.companyId,
+        dueDate: event.dueDate,
+        priority: event.priority,
+        assigneeId: event.assigneeId,
+      ),
     );
 
     result.fold((failure) => emit(TaskError(failure.message)), (newTask) {
@@ -124,13 +131,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     ToggleTaskCompletionEvent event,
     Emitter<TaskState> emit,
   ) async {
-    if (state is TaskLoaded) {
-      final currentState = state as TaskLoaded;
-      final task = currentState.tasks.firstWhere((t) => t.id == event.taskId);
-
-      final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
-
-      add(UpdateTaskEvent(updatedTask));
-    }
+    // TODO: Implement toggle logic if needed, or rely on UpdateTaskEvent
   }
 }

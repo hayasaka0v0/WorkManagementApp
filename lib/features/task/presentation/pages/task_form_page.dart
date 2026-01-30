@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learning/features/task/domain/entities/task.dart';
+import 'package:learning/features/task/domain/entities/task_entity.dart';
 import 'package:learning/features/task/presentation/bloc/task_bloc.dart';
 
 /// Task form page - for creating and editing tasks
@@ -17,6 +17,10 @@ class _TaskFormPageState extends State<TaskFormPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+
+  // State for new fields
+  DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
+  TaskPriority _selectedPriority = TaskPriority.medium;
   bool _isLoading = false;
 
   @override
@@ -26,6 +30,12 @@ class _TaskFormPageState extends State<TaskFormPage> {
     _descriptionController = TextEditingController(
       text: widget.task?.description ?? '',
     );
+
+    // Load existing data if editing
+    if (widget.task != null) {
+      _selectedDate = widget.task!.dueDate;
+      _selectedPriority = widget.task!.priority;
+    }
   }
 
   @override
@@ -36,6 +46,20 @@ class _TaskFormPageState extends State<TaskFormPage> {
   }
 
   bool get _isEditing => widget.task != null;
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
 
   Future<void> _saveTask() async {
     if (!_formKey.currentState!.validate()) {
@@ -51,6 +75,8 @@ class _TaskFormPageState extends State<TaskFormPage> {
       final updatedTask = widget.task!.copyWith(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
+        priority: _selectedPriority,
+        dueDate: _selectedDate,
       );
       widget.bloc.add(UpdateTaskEvent(updatedTask));
     } else {
@@ -59,6 +85,10 @@ class _TaskFormPageState extends State<TaskFormPage> {
         CreateTaskEvent(
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
+          companyId: 'company_123', // Hardcoded for now
+          priority: _selectedPriority,
+          dueDate: _selectedDate,
+          assigneeId: null,
         ),
       );
     }
@@ -109,6 +139,44 @@ class _TaskFormPageState extends State<TaskFormPage> {
               maxLines: 5,
               textInputAction: TextInputAction.done,
             ),
+            const SizedBox(height: 16),
+
+            // Priority Dropdown
+            DropdownButtonFormField<TaskPriority>(
+              value: _selectedPriority,
+              decoration: const InputDecoration(
+                labelText: 'Priority',
+                border: OutlineInputBorder(),
+              ),
+              items: TaskPriority.values.map((priority) {
+                return DropdownMenuItem(
+                  value: priority,
+                  child: Text(priority.name.toUpperCase()),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _selectedPriority = value);
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Date Picker
+            InkWell(
+              onTap: _pickDate,
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: 'Due Date',
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.calendar_today),
+                ),
+                child: Text(
+                  "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
+                ),
+              ),
+            ),
+
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _isLoading ? null : _saveTask,
