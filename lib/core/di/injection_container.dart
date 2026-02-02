@@ -16,6 +16,7 @@ import 'package:learning/features/company/domain/usecases/join_company.dart';
 import 'package:learning/features/company/domain/usecases/get_company_by_id.dart';
 import 'package:learning/features/company/domain/usecases/regenerate_invite_code.dart';
 import 'package:learning/features/company/domain/usecases/leave_company.dart';
+import 'package:learning/features/company/domain/usecases/get_company_members.dart';
 import 'package:learning/features/task/data/datasources/task_remote_data_source.dart';
 import 'package:learning/features/task/data/repositories/task_repository_impl.dart';
 import 'package:learning/features/task/domain/repositories/task_repository.dart';
@@ -24,6 +25,15 @@ import 'package:learning/features/task/domain/usecases/delete_task.dart';
 import 'package:learning/features/task/domain/usecases/get_tasks.dart';
 import 'package:learning/features/task/domain/usecases/update_task.dart';
 import 'package:learning/features/task/presentation/bloc/task_bloc.dart';
+import 'package:learning/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:learning/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:learning/features/chat/domain/repositories/chat_repository.dart';
+import 'package:learning/features/chat/domain/usecases/get_chat_rooms.dart';
+import 'package:learning/features/chat/domain/usecases/get_messages.dart';
+import 'package:learning/features/chat/domain/usecases/send_message.dart';
+import 'package:learning/features/chat/domain/usecases/create_chat_room.dart';
+import 'package:learning/features/chat/domain/usecases/create_group_chat.dart';
+import 'package:learning/features/chat/presentation/bloc/chat_bloc.dart';
 
 /// Service locator instance
 final sl = GetIt.instance;
@@ -76,6 +86,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => GetCompanyById(sl()));
   sl.registerLazySingleton(() => RegenerateInviteCode(sl()));
   sl.registerLazySingleton(() => LeaveCompany(sl()));
+  sl.registerLazySingleton(() => GetCompanyMembers(sl()));
 
   // ========== Task Feature ==========
   // Data sources
@@ -99,6 +110,34 @@ Future<void> initializeDependencies() async {
       createTask: sl(),
       updateTask: sl(),
       deleteTask: sl(),
+    ),
+  );
+
+  // ========== Chat Feature ==========
+  // Data sources
+  sl.registerLazySingleton<ChatRemoteDataSource>(
+    () => ChatRemoteDataSourceImpl(SupabaseClientManager.client),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerLazySingleton(() => GetChatRooms(sl()));
+  sl.registerLazySingleton(() => GetMessages(sl()));
+  sl.registerLazySingleton(() => SendMessage(sl()));
+  sl.registerLazySingleton(() => CreateChatRoom(sl()));
+  sl.registerLazySingleton(() => CreateGroupChat(sl()));
+
+  // BLoC
+  sl.registerFactory(
+    () => ChatBloc(
+      getChatRooms: sl(),
+      getMessages: sl(),
+      sendMessage: sl(),
+      createChatRoom: sl(),
+      createGroupChat: sl(),
+      chatRepository: sl(),
     ),
   );
 }

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:learning/core/error/failures.dart';
 import 'package:learning/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:learning/features/company/domain/entities/company.dart';
+import 'package:learning/features/auth/domain/entities/auth_user.dart';
 import 'package:learning/features/company/domain/repositories/company_repository.dart';
 
 /// Implementation of CompanyRepository
@@ -93,6 +94,19 @@ class CompanyRepositoryImpl implements CompanyRepository {
     try {
       await remoteDataSource.leaveCompany(userId);
       return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<AuthUser>>> getCompanyMembers(
+    String companyId,
+  ) async {
+    try {
+      final models = await remoteDataSource.getCompanyMembers(companyId);
+      final entities = models.map((e) => e.toEntity()).toList();
+      return Right(entities);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

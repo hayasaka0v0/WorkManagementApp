@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:learning/features/company/data/models/company_model.dart';
+import 'package:learning/features/auth/data/models/auth_user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Abstract interface for company remote data source
@@ -27,6 +28,9 @@ abstract interface class CompanyRemoteDataSource {
 
   /// Leave current company
   Future<void> leaveCompany(String userId);
+
+  /// Get company members
+  Future<List<AuthUserModel>> getCompanyMembers(String companyId);
 }
 
 /// Implementation of CompanyRemoteDataSource using Supabase
@@ -182,6 +186,20 @@ class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
     } catch (e) {
       print('❌ Failed to leave company: $e');
       throw Exception('Failed to leave company: $e');
+    }
+  }
+
+  @override
+  Future<List<AuthUserModel>> getCompanyMembers(String companyId) async {
+    try {
+      final response = await client
+          .from(_usersTable)
+          .select()
+          .eq('company_id', companyId);
+
+      return (response as List).map((e) => AuthUserModel.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to get company members: $e');
     }
   }
 }

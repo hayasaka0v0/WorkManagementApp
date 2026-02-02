@@ -141,6 +141,17 @@ CREATE TABLE public.users (
   CONSTRAINT users_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id)
 );
 
+
+CREATE TABLE public.chat_participants (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  room_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  joined_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT chat_participants_pkey PRIMARY KEY (id),
+  CONSTRAINT chat_participants_room_id_fkey FOREIGN KEY (room_id) REFERENCES public.chat_rooms(id) ON DELETE CASCADE,
+  CONSTRAINT chat_participants_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE,
+  UNIQUE(room_id, user_id)
+);
 ```text
 lib
 lib/core

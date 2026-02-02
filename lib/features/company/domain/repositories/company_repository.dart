@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:learning/core/error/failures.dart';
 import 'package:learning/features/company/domain/entities/company.dart';
+import 'package:learning/features/auth/domain/entities/auth_user.dart';
 
 /// Repository interface for company operations
 abstract interface class CompanyRepository {
@@ -29,4 +30,7 @@ abstract interface class CompanyRepository {
 
   /// Leave current company
   Future<Either<Failure, void>> leaveCompany(String userId);
+
+  /// Get all members of a company
+  Future<Either<Failure, List<AuthUser>>> getCompanyMembers(String companyId);
 }

@@ -1,52 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learning/core/di/injection_container.dart';
+import 'package:learning/core/usecase/usecase.dart';
+import 'package:learning/features/auth/domain/usecases/get_current_user.dart';
+import 'package:learning/features/chat/domain/entities/chat_room.dart';
+import 'package:learning/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:learning/features/chat/presentation/widgets/chat_item_tile.dart';
 import 'package:learning/features/chat/presentation/pages/chat_new_contact.dart';
-import 'package:learning/features/chat/presentation/pages/chat_new_group_chat.dart';  
+import 'package:learning/features/chat/presentation/pages/chat_new_group_chat.dart';
+import 'package:learning/features/chat/presentation/pages/chat_room_page.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for demonstration
-    final List<Map<String, dynamic>> dummyChats = [
-      {
-        'name': 'Development Team',
-        'message': 'We need to discuss the upcoming feature release.',
-        'time': '10:30 AM',
-        'unreadCount': 2,
-        'imageUrl': 'https://via.placeholder.com/150',
-      },
-      {
-        'name': 'Marketing Group',
-        'message': 'The new campaign is live!',
-        'time': '09:15 AM',
-        'unreadCount': 5,
-        'imageUrl': 'https://via.placeholder.com/150',
-      },
-      {
-        'name': 'Project Manager',
-        'message': 'Can you send me the report?',
-        'time': 'Yesterday',
-        'unreadCount': 0,
-        'imageUrl': 'https://via.placeholder.com/150',
-      },
-      {
-        'name': 'Design Team',
-        'message': 'Check out the new prototypes on Figma.',
-        'time': 'Yesterday',
-        'unreadCount': 1,
-        'imageUrl': 'https://via.placeholder.com/150',
-      },
-      {
-        'name': 'Client Meeting',
-        'message': 'Meeting rescheduled to 3 PM.',
-        'time': 'Mon',
-        'unreadCount': 0,
-        'imageUrl': 'https://via.placeholder.com/150',
-      },
-    ];
+    return BlocProvider(
+      create: (context) => sl<ChatBloc>(),
+      child: const ChatView(),
+    );
+  }
+}
 
+class ChatView extends StatefulWidget {
+  const ChatView({super.key});
+
+  @override
+  State<ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<ChatView> {
+  @override
+  void initState() {
+    super.initState();
+    _loadChatRooms();
+  }
+
+  void _loadChatRooms() async {
+    final userResult = await sl<GetCurrentUser>()(const NoParams());
+    userResult.fold(
+      (failure) {
+        // Handle failure (maybe show snackbar)
+      },
+      (user) {
+        if (user != null && user.companyId != null) {
+          if (mounted) {
+            context.read<ChatBloc>().add(GetChatRoomsEvent(user.companyId!));
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -57,21 +64,67 @@ class ChatPage extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         scrolledUnderElevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.blueAccent),
+            onPressed: _loadChatRooms,
+          ),
+        ],
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        itemCount: dummyChats.length,
-        separatorBuilder: (context, index) =>
-            const Divider(height: 1, indent: 80),
-        itemBuilder: (context, index) {
-          final chat = dummyChats[index];
-          return ChatItemTile(
-            name: chat['name'],
-            message: chat['message'],
-            time: chat['time'],
-            unreadCount: chat['unreadCount'],
-            imageUrl: chat['imageUrl'],
-          );
+      body: BlocConsumer<ChatBloc, ChatState>(
+        listener: (context, state) {
+          if (state is ChatFailure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
+        buildWhen: (previous, current) =>
+            current is ChatLoading ||
+            current is ChatRoomsLoaded ||
+            current is ChatFailure,
+        builder: (context, state) {
+          if (state is ChatLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is ChatRoomsLoaded) {
+            if (state.chatRooms.isEmpty) {
+              return const Center(child: Text('No chats yet'));
+            }
+            return ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              itemCount: state.chatRooms.length,
+              separatorBuilder: (context, index) =>
+                  const Divider(height: 1, indent: 80),
+              itemBuilder: (context, index) {
+                final chat = state.chatRooms[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatRoomPage(
+                          roomId: chat.id,
+                          roomName: chat.roomName ?? 'Chat',
+                        ),
+                      ),
+                    ).then((_) => _loadChatRooms());
+                  },
+                  child: ChatItemTile(
+                    name: chat.roomName ?? 'Unknown',
+                    message: chat.lastMessage ?? 'No messages',
+                    time: chat.lastMessageTime != null
+                        ? _formatTime(chat.lastMessageTime!)
+                        : '',
+                    unreadCount: 0, // TODO: Implement unread count
+                    imageUrl:
+                        'https://ui-avatars.com/api/?name=${chat.roomName}&background=random',
+                  ),
+                );
+              },
+            );
+          }
+          return const SizedBox();
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -101,7 +154,9 @@ class ChatPage extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>  NewContact()),
+                          MaterialPageRoute(
+                            builder: (context) => const NewContact(),
+                          ),
                         );
                       },
                     ),
@@ -118,7 +173,9 @@ class ChatPage extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>  ChatNewGroupChatPage()),
+                          MaterialPageRoute(
+                            builder: (context) => const ChatNewGroupChatPage(),
+                          ),
                         );
                       },
                     ),
@@ -133,5 +190,14 @@ class ChatPage extends StatelessWidget {
         child: const Icon(Icons.add, color: Colors.white, size: 30),
       ),
     );
+  }
+
+  String _formatTime(DateTime time) {
+    // Simple helper
+    final now = DateTime.now();
+    if (now.difference(time).inDays == 0) {
+      return "${time.hour}:${time.minute.toString().padLeft(2, '0')}";
+    }
+    return "${time.day}/${time.month}";
   }
 }
