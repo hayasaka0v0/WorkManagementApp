@@ -10,9 +10,11 @@ abstract class TaskRepository {
   Future<Either<Failure, Task>> createTask({
     required String title,
     required String description,
-    required String companyId,
+    String? companyId,
     required DateTime dueDate,
     required TaskPriority priority,
+    required TaskStatus status,
+    required TaskVisibility visibility,
     String? assigneeId,
   });
 

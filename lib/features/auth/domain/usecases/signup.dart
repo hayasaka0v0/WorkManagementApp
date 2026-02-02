@@ -16,6 +16,7 @@ class Signup implements UseCase<AuthUser, SignupParams> {
       email: params.email,
       password: params.password,
       phoneNumber: params.phoneNumber,
+      role: params.role,
     );
   }
 }
@@ -25,6 +26,12 @@ class SignupParams {
   final String email;
   final String password;
   final String? phoneNumber;
+  final String role;
 
-  SignupParams({required this.email, required this.password, this.phoneNumber});
+  SignupParams({
+    required this.email,
+    required this.password,
+    this.phoneNumber,
+    required this.role,
+  });
 }

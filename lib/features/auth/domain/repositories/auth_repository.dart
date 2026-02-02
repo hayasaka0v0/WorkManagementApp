@@ -15,6 +15,7 @@ abstract interface class AuthRepository {
     required String email,
     required String password,
     String? phoneNumber,
+    required String role,
   });
 
   /// Sign out the current user

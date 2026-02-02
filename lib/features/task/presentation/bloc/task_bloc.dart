@@ -28,6 +28,61 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<UpdateTaskEvent>(_onUpdateTask);
     on<DeleteTaskEvent>(_onDeleteTask);
     on<ToggleTaskCompletionEvent>(_onToggleTaskCompletion);
+    on<FilterTasksEvent>(_onFilterTasks);
+  }
+
+  List<Task> _applyFilter(
+    List<Task> tasks,
+    String? companyId,
+    List<TaskPriority>? priorities,
+    List<TaskVisibility>? visibilities,
+  ) {
+    return tasks.where((task) {
+      if (companyId != null && task.companyId != companyId) return false;
+      if (priorities != null &&
+          priorities.isNotEmpty &&
+          !priorities.contains(task.priority)) {
+        return false;
+      }
+      if (visibilities != null &&
+          visibilities.isNotEmpty &&
+          !visibilities.contains(task.visibility)) {
+        return false;
+      }
+      return true;
+    }).toList();
+  }
+
+  void _onFilterTasks(FilterTasksEvent event, Emitter<TaskState> emit) {
+    if (state is TaskLoaded) {
+      final currentState = state as TaskLoaded;
+
+      // Use event values, treating them as the *new* state of the filter.
+      // NOTE: This assumes the UI passes the *complete* desired filter state every time.
+      // If we wanted "update only what changed", we'd need to check for "unset" vs "null".
+      // For simplicity, we assume the UI manages the filter state object and passes it here.
+
+      // If we want to allow partial updates, we would fallback to currentState.filterX
+      // But clearing a filter (setting to null) would be impossible if we always fallback to current.
+      // So we assume the event provides the FULL filter configuration.
+
+      final filteredTasks = _applyFilter(
+        currentState.allTasks,
+        event.companyId,
+        event.priorities,
+        event.visibilities,
+      );
+
+      emit(
+        TaskLoaded(
+          allTasks: currentState.allTasks,
+          tasks: filteredTasks,
+          filterCompanyId: event.companyId,
+          filterPriorities: event.priorities,
+          filterVisibilities: event.visibilities,
+        ),
+      );
+    }
   }
 
   Future<void> _onLoadTasks(
@@ -40,7 +95,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
     result.fold(
       (failure) => emit(TaskError(failure.message)),
-      (tasks) => emit(TaskLoaded(tasks)),
+      (tasks) => emit(TaskLoaded(allTasks: tasks, tasks: tasks)),
     );
   }
 
@@ -58,6 +113,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         companyId: event.companyId,
         dueDate: event.dueDate,
         priority: event.priority,
+        status: event.status,
+        visibility: event.visibility,
         assigneeId: event.assigneeId,
       ),
     );
@@ -76,21 +133,37 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       final currentState = state as TaskLoaded;
 
       // Optimistically update UI
-      final updatedTasks = currentState.tasks.map((task) {
+      final updatedAllTasks = currentState.allTasks.map((task) {
         return task.id == event.task.id ? event.task : task;
       }).toList();
 
-      emit(TaskLoaded(updatedTasks));
+      final updatedTasks = _applyFilter(
+        updatedAllTasks,
+        currentState.filterCompanyId,
+        currentState.filterPriorities,
+        currentState.filterVisibilities,
+      );
+
+      emit(
+        TaskLoaded(
+          allTasks: updatedAllTasks,
+          tasks: updatedTasks,
+          filterCompanyId: currentState.filterCompanyId,
+          filterPriorities: currentState.filterPriorities,
+          filterVisibilities: currentState.filterVisibilities,
+        ),
+      );
 
       final result = await updateTask(event.task);
 
       result.fold(
         (failure) {
           // Revert on failure
-          emit(TaskLoaded(currentState.tasks));
+          emit(currentState); // Re-emit the exact previous state
           emit(TaskError(failure.message));
         },
         (_) {
+          // Keep the optimistic update or reload to confirm
           // Reload to get fresh data from server
           add(LoadTasksEvent());
         },
@@ -106,18 +179,33 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       final currentState = state as TaskLoaded;
 
       // Optimistically remove from UI
-      final updatedTasks = currentState.tasks
+      final updatedAllTasks = currentState.allTasks
           .where((task) => task.id != event.taskId)
           .toList();
 
-      emit(TaskLoaded(updatedTasks));
+      final updatedTasks = _applyFilter(
+        updatedAllTasks,
+        currentState.filterCompanyId,
+        currentState.filterPriorities,
+        currentState.filterVisibilities,
+      );
+
+      emit(
+        TaskLoaded(
+          allTasks: updatedAllTasks,
+          tasks: updatedTasks,
+          filterCompanyId: currentState.filterCompanyId,
+          filterPriorities: currentState.filterPriorities,
+          filterVisibilities: currentState.filterVisibilities,
+        ),
+      );
 
       final result = await deleteTask(event.taskId);
 
       result.fold(
         (failure) {
           // Revert on failure
-          emit(TaskLoaded(currentState.tasks));
+          emit(currentState);
           emit(TaskError(failure.message));
         },
         (_) {

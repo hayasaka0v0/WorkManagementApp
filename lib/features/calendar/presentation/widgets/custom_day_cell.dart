@@ -4,7 +4,8 @@ class CustomDayCell extends StatelessWidget {
   final DateTime day;
   final bool isToday;
   final bool isSelected;
-  final List<Map<String, dynamic>> events; // Nhận danh sách sự kiện từ bên ngoài
+  final List<Map<String, dynamic>>
+  events; // Nhận danh sách sự kiện từ bên ngoài
 
   const CustomDayCell({
     super.key,
@@ -21,7 +22,12 @@ class CustomDayCell extends StatelessWidget {
       margin: EdgeInsets.zero,
       decoration: BoxDecoration(
         color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.white,
-        border: Border.all(color: Colors.grey.shade200),
+        border: isToday
+            ? Border.all(
+                color: Colors.blue,
+                width: 2,
+              ) // Bold blue border for today
+            : Border.all(color: Colors.grey.shade200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +44,7 @@ class CustomDayCell extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Hiển thị Event đầu tiên (nếu có)
           if (events.isNotEmpty) ...[
             Padding(
@@ -48,13 +54,19 @@ class CustomDayCell extends StatelessWidget {
                 children: [
                   Text(
                     events.first['title'],
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: events.first['color'],
                       borderRadius: BorderRadius.circular(8),
@@ -70,8 +82,8 @@ class CustomDayCell extends StatelessWidget {
                   ),
                 ],
               ),
-            )
-          ]
+            ),
+          ],
         ],
       ),
     );

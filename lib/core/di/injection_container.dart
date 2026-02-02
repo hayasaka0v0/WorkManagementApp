@@ -8,6 +8,14 @@ import 'package:learning/features/auth/domain/usecases/login.dart';
 import 'package:learning/features/auth/domain/usecases/logout.dart';
 import 'package:learning/features/auth/domain/usecases/signup.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:learning/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:learning/features/company/data/repositories/company_repository_impl.dart';
+import 'package:learning/features/company/domain/repositories/company_repository.dart';
+import 'package:learning/features/company/domain/usecases/create_company.dart';
+import 'package:learning/features/company/domain/usecases/join_company.dart';
+import 'package:learning/features/company/domain/usecases/get_company_by_id.dart';
+import 'package:learning/features/company/domain/usecases/regenerate_invite_code.dart';
+import 'package:learning/features/company/domain/usecases/leave_company.dart';
 import 'package:learning/features/task/data/datasources/task_remote_data_source.dart';
 import 'package:learning/features/task/data/repositories/task_repository_impl.dart';
 import 'package:learning/features/task/domain/repositories/task_repository.dart';
@@ -42,9 +50,32 @@ Future<void> initializeDependencies() async {
 
   // BLoC
   sl.registerLazySingleton(
-    () =>
-        AuthBloc(login: sl(), signup: sl(), logout: sl(), getCurrentUser: sl()),
+    () => AuthBloc(
+      login: sl(),
+      signup: sl(),
+      logout: sl(),
+      getCurrentUser: sl(),
+      leaveCompany: sl(),
+    ),
   );
+
+  // ========== Company Feature ==========
+  // Data sources
+  sl.registerLazySingleton<CompanyRemoteDataSource>(
+    () => CompanyRemoteDataSourceImpl(SupabaseClientManager.client),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<CompanyRepository>(
+    () => CompanyRepositoryImpl(sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => CreateCompany(sl()));
+  sl.registerLazySingleton(() => JoinCompany(sl()));
+  sl.registerLazySingleton(() => GetCompanyById(sl()));
+  sl.registerLazySingleton(() => RegenerateInviteCode(sl()));
+  sl.registerLazySingleton(() => LeaveCompany(sl()));
 
   // ========== Task Feature ==========
   // Data sources

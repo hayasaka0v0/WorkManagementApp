@@ -7,6 +7,7 @@ Trang
 This file provides the context and rules for the AI agent working on this project.
 
 ## Project Scope
+**IMPORTANT**: This project is a Flutter application that uses Supabase for the backend. The application is built using Clean Architecture with Feature-based separation bloc pattern.
 - **Focus Directories**: `lib/`
 - **Allowed Config Files**: `.env`, `pubspec.yaml`
 - **Ignored Directories**: Do NOT read, explore, or modify `android/`, `ios/`, `build/`, `linux/`, `macos/`, `web/`, `windows/` or any other directory not explicitly listed.
@@ -27,6 +28,118 @@ This file provides the context and rules for the AI agent working on this projec
 
 ## Project Structure (lib/)
 The following is the current structure of the `lib/` directory. Use this to understand the project architecture (Clean Architecture with Feature-based separation).
+
+
+## Supabase SQL:
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+-- Enum cho TaskStatus
+CREATE TYPE public.task_status_enum AS ENUM (
+    'pending', 
+    'inProgress', 
+    'completed', 
+    'cancelled'
+);
+
+-- Enum cho TaskPriority (nếu chưa có thì tạo mới, thay thế check constraint cũ)
+CREATE TYPE public.task_priority_enum AS ENUM (
+    'low', 
+    'medium', 
+    'high', 
+    'urgent'
+);
+
+-- Enum cho TaskVisibility
+CREATE TYPE public.task_visibility_enum AS ENUM (
+    'public', 
+    'private', 
+    'teamOnly'
+);
+
+CREATE TABLE public.attachments (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  message_id uuid NOT NULL,
+  file_url text NOT NULL,
+  file_name character varying,
+  file_type character varying,
+  file_size_bytes bigint,
+  CONSTRAINT attachments_pkey PRIMARY KEY (id),
+  CONSTRAINT attachments_message_id_fkey FOREIGN KEY (message_id) REFERENCES public.messages(id)
+);
+CREATE TABLE public.chat_rooms (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  company_id uuid NOT NULL,
+  room_name character varying,
+  is_group boolean DEFAULT false,
+  CONSTRAINT chat_rooms_pkey PRIMARY KEY (id),
+  CONSTRAINT chat_rooms_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id)
+);
+CREATE TABLE public.companies (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  company_name character varying NOT NULL,
+  invite_code character varying NOT NULL UNIQUE,
+  created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT companies_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.events (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  company_id uuid NOT NULL,
+  title character varying NOT NULL,
+  description text,
+  location text,
+  start_time timestamp with time zone NOT NULL,
+  end_time timestamp with time zone NOT NULL,
+  creator_id uuid,
+  created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT events_pkey PRIMARY KEY (id),
+  CONSTRAINT events_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id),
+  CONSTRAINT events_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.messages (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  room_id uuid NOT NULL,
+  sender_id uuid NOT NULL,
+  content text,
+  created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT messages_pkey PRIMARY KEY (id),
+  CONSTRAINT messages_room_id_fkey FOREIGN KEY (room_id) REFERENCES public.chat_rooms(id),
+  CONSTRAINT messages_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.tasks (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  company_id uuid NOT NULL,
+  creator_id uuid NOT NULL,
+  assignee_id uuid,
+  title character varying NOT NULL,
+  description text,
+  priority USER-DEFINED DEFAULT 'medium'::task_priority_enum,
+  due_date timestamp with time zone NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp with time zone NOT NULL,
+  user_id uuid DEFAULT auth.uid(),
+  status USER-DEFINED NOT NULL DEFAULT 'pending'::task_status_enum,
+  visibility USER-DEFINED NOT NULL DEFAULT 'public'::task_visibility_enum,
+  CONSTRAINT tasks_pkey PRIMARY KEY (id),
+  CONSTRAINT tasks_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT tasks_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id),
+  CONSTRAINT tasks_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES public.users(id),
+  CONSTRAINT tasks_assignee_id_fkey FOREIGN KEY (assignee_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.users (
+  id uuid NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  full_name character varying,
+  company_id uuid,
+  role character varying CHECK (role::text = ANY (ARRAY['boss'::character varying, 'manager'::character varying, 'employee'::character varying]::text[])),
+  job_title character varying,
+  avatar_url text,
+  created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  phone_number character varying,
+  CONSTRAINT users_pkey PRIMARY KEY (id),
+  CONSTRAINT users_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id),
+  CONSTRAINT users_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id)
+);
 
 ```text
 lib
@@ -127,3 +240,4 @@ lib/features/task/presentation/widgets/task_card.dart
 lib/main.dart
 ```
 
+HG6M9BWV

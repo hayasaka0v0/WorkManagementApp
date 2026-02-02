@@ -39,6 +39,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     String? phoneNumber,
+    required String role,
   }) async {
     try {
       // Validate input
@@ -61,6 +62,7 @@ class AuthRepositoryImpl implements AuthRepository {
         email: trimmedEmail,
         password: trimmedPassword,
         phoneNumber: phoneNumber,
+        role: role,
       );
       return Right(userModel.toEntity());
     } catch (e) {

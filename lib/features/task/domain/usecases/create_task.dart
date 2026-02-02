@@ -19,6 +19,8 @@ class CreateTask implements UseCase<Task, CreateTaskParams> {
       companyId: params.companyId,
       dueDate: params.dueDate,
       priority: params.priority,
+      status: params.status,
+      visibility: params.visibility,
       assigneeId: params.assigneeId,
     );
   }
@@ -28,17 +30,21 @@ class CreateTask implements UseCase<Task, CreateTaskParams> {
 class CreateTaskParams extends Equatable {
   final String title;
   final String description;
-  final String companyId;
+  final String? companyId;
   final DateTime dueDate;
   final TaskPriority priority;
+  final TaskStatus status;
+  final TaskVisibility visibility;
   final String? assigneeId;
 
   const CreateTaskParams({
     required this.title,
     required this.description,
-    required this.companyId,
+    this.companyId,
     required this.dueDate,
     required this.priority,
+    this.status = TaskStatus.pending,
+    this.visibility = TaskVisibility.teamOnly,
     this.assigneeId,
   });
 
@@ -49,6 +55,8 @@ class CreateTaskParams extends Equatable {
     companyId,
     dueDate,
     priority,
+    status,
+    visibility,
     assigneeId,
   ];
 }

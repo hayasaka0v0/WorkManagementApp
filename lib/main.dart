@@ -4,6 +4,7 @@ import 'package:learning/core/di/injection_container.dart';
 import 'package:learning/core/network/supabase_client.dart';
 import 'package:learning/core/theme/theme.dart';
 import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:learning/features/auth/presentation/pages/login_page.dart';
 import 'package:learning/features/home/presentation/pages/home_page.dart';
 
 void main() async {
@@ -24,14 +25,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<AuthBloc>(),
+      create: (_) => sl<AuthBloc>()..add(AuthCheckRequested()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Task Manager',
         theme: AppTheme.lightThemeMode,
-        home:const HomePage(),
-        
-        
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthLoading) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+            if (state is AuthAuthenticated) {
+              return const HomePage();
+            }
+            return const LoginPage();
+          },
+        ),
       ),
     );
   }

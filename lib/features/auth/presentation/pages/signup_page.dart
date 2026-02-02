@@ -4,7 +4,7 @@ import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:learning/features/auth/presentation/pages/login_page.dart';
 import 'package:learning/features/auth/presentation/widgets/auth_button.dart';
 import 'package:learning/features/auth/presentation/widgets/auth_field.dart';
-import 'package:learning/features/task/presentation/pages/task_list_page.dart';
+import 'package:learning/features/home/presentation/pages/home_page.dart';
 
 /// Signup page for user registration
 class SignupPage extends StatefulWidget {
@@ -20,6 +20,8 @@ class _SignupPageState extends State<SignupPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _phoneNumberController = TextEditingController();
+
+  String _selectedRole = 'employee'; // Default role
 
   @override
   void dispose() {
@@ -41,6 +43,7 @@ class _SignupPageState extends State<SignupPage> {
           email: email,
           password: password,
           phoneNumber: phoneNumber.isEmpty ? null : phoneNumber,
+          role: _selectedRole,
         ),
       );
     }
@@ -60,7 +63,7 @@ class _SignupPageState extends State<SignupPage> {
             );
           } else if (state is AuthAuthenticated) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const TaskListPage()),
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         },
@@ -120,6 +123,42 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     const SizedBox(height: 16),
 
+                    // Role Dropdown
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey[300]!),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedRole,
+                          isExpanded: true,
+                          hint: const Text('Select Role'),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'boss',
+                              child: Text('Boss (Quản lý công ty)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'manager',
+                              child: Text('Manager (Quản lý)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'employee',
+                              child: Text('Employee (Nhân viên)'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() => _selectedRole = value);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // Password Field
                     AuthField(
                       hintText: 'Password',
@@ -171,18 +210,18 @@ class _SignupPageState extends State<SignupPage> {
                           'Already have an account? ',
                           style: TextStyle(color: Colors.grey[400]),
                         ),
-                          TextButton(
-                            onPressed: isLoading
-                                ? null
-                                : () {
-                                    Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                        builder: (_) => const LoginPage(),
-                                      ),
-                                    );
-                                  },
-                            child: const Text(
-                              'Login',
+                        TextButton(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (_) => const LoginPage(),
+                                    ),
+                                  );
+                                },
+                          child: const Text(
+                            'Login',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),

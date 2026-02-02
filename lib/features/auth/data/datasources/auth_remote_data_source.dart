@@ -12,6 +12,7 @@ abstract interface class AuthRemoteDataSource {
     required String email,
     required String password,
     String? phoneNumber,
+    required String role,
   });
 
   Future<void> logout();
@@ -78,9 +79,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
     String? phoneNumber,
+    required String role,
   }) async {
     try {
-      print('🔵 Attempting signup with email: $email');
+      print('🔵 Attempting signup with email: $email, role: $role');
 
       // Step 1: Create auth user
       final response = await client.auth.signUp(
@@ -103,6 +105,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         'id': response.user!.id,
         'email': response.user!.email!,
         'phone_number': phoneNumber,
+        'role': role, // Save user role
         'created_at': response.user!.createdAt,
       };
 

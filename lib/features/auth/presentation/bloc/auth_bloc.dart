@@ -6,6 +6,7 @@ import 'package:learning/features/auth/domain/usecases/get_current_user.dart';
 import 'package:learning/features/auth/domain/usecases/login.dart';
 import 'package:learning/features/auth/domain/usecases/logout.dart';
 import 'package:learning/features/auth/domain/usecases/signup.dart';
+import 'package:learning/features/company/domain/usecases/leave_company.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -16,17 +17,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Signup signup;
   final Logout logout;
   final GetCurrentUser getCurrentUser;
+  final LeaveCompany leaveCompany;
 
   AuthBloc({
     required this.login,
     required this.signup,
     required this.logout,
     required this.getCurrentUser,
+    required this.leaveCompany,
   }) : super(AuthInitial()) {
     on<AuthCheckRequested>(_onCheckAuth);
     on<AuthLoginRequested>(_onLogin);
     on<AuthSignupRequested>(_onSignup);
     on<AuthLogoutRequested>(_onLogout);
+    on<AuthLeaveCompanyRequested>(_onLeaveCompany);
   }
 
   Future<void> _onCheckAuth(
@@ -73,6 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
         phoneNumber: event.phoneNumber,
+        role: event.role,
       ),
     );
 
@@ -93,6 +98,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (_) => emit(AuthUnauthenticated()),
+    );
+  }
+
+  Future<void> _onLeaveCompany(
+    AuthLeaveCompanyRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final currentUser = (state is AuthAuthenticated)
+        ? (state as AuthAuthenticated).user
+        : null;
+    emit(AuthLoading());
+
+    final result = await leaveCompany(LeaveCompanyParams(userId: event.userId));
+
+    await result.fold(
+      (failure) async {
+        emit(AuthError(failure.message));
+        if (currentUser != null) emit(AuthAuthenticated(currentUser));
+      },
+      (_) async {
+        add(AuthCheckRequested());
+      },
     );
   }
 }

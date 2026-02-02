@@ -10,7 +10,9 @@ enum TaskVisibility { public, private, teamOnly }
 /// Task entity - represents a task in the domain layer
 class Task extends Equatable {
   final String id;
-  final String companyId;
+  final String? companyId;
+  // Make companyName nullable as it might not be populated in all contexts (e.g. creation before fetch)
+  final String? companyName;
   final User creator;
   final User? assignee;
   final String title;
@@ -24,7 +26,8 @@ class Task extends Equatable {
 
   const Task({
     required this.id,
-    required this.companyId,
+    this.companyId,
+    this.companyName,
     required this.creator,
     this.assignee,
     required this.title,
@@ -41,6 +44,7 @@ class Task extends Equatable {
   Task copyWith({
     String? id,
     String? companyId,
+    String? companyName,
     User? creator,
     User? assignee,
     String? title,
@@ -55,6 +59,7 @@ class Task extends Equatable {
     return Task(
       id: this.id,
       companyId: companyId ?? this.companyId,
+      companyName: companyName ?? this.companyName,
       creator: creator ?? this.creator,
       assignee: assignee ?? this.assignee,
       title: title ?? this.title,
@@ -67,10 +72,12 @@ class Task extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
   @override
   List<Object?> get props => [
     id,
     companyId,
+    companyName,
     creator,
     assignee,
     title,

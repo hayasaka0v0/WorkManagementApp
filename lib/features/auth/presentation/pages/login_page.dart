@@ -4,7 +4,6 @@ import 'package:learning/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:learning/features/auth/presentation/pages/signup_page.dart';
 import 'package:learning/features/auth/presentation/widgets/auth_button.dart';
 import 'package:learning/features/auth/presentation/widgets/auth_field.dart';
-import 'package:learning/features/home/presentation/pages/home_page.dart';
 
 /// Login page for user authentication
 class LoginPage extends StatefulWidget {
@@ -48,10 +47,6 @@ class _LoginPageState extends State<LoginPage> {
                 content: Text(state.message),
                 backgroundColor: Colors.red,
               ),
-            );
-          } else if (state is AuthAuthenticated) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         },
