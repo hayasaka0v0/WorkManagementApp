@@ -75,6 +75,15 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Stream<List<Message>> subscribeToMessages(String roomId) {
-    return remoteDataSource.subscribeToMessages(roomId);
+    return remoteDataSource.subscribeToMessages(roomId).map((models) {
+      return models.map((e) => e as Message).toList();
+    });
+  }
+
+  @override
+  Stream<Message> subscribeToAllMessages() {
+    return remoteDataSource.subscribeToAllMessages().map(
+      (model) => model as Message,
+    );
   }
 }

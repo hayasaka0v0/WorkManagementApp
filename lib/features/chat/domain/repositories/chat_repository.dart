@@ -22,4 +22,7 @@ abstract class ChatRepository {
 
   /// Subscribe to real-time messages in a chat room
   Stream<List<Message>> subscribeToMessages(String roomId);
+
+  /// Subscribe to ANY new message (for updating chat list last message/time)
+  Stream<Message> subscribeToAllMessages();
 }

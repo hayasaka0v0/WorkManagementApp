@@ -45,6 +45,13 @@ final class SubscribeToMessagesEvent extends ChatEvent {
 /// Unsubscribe from real-time messages
 final class UnsubscribeFromMessagesEvent extends ChatEvent {}
 
+final class SubscribeToChatListUpdatesEvent extends ChatEvent {}
+
+final class ChatListUpdatedEvent extends ChatEvent {
+  final Message newMessage;
+  ChatListUpdatedEvent(this.newMessage);
+}
+
 /// Internal event triggered when messages are updated via stream
 final class MessagesUpdatedEvent extends ChatEvent {
   final List<Message> messages;

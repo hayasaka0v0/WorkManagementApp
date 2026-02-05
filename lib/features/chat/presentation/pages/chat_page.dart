@@ -46,6 +46,7 @@ class _ChatViewState extends State<ChatView> {
         if (user != null && user.companyId != null) {
           if (mounted) {
             context.read<ChatBloc>().add(GetChatRoomsEvent(user.companyId!));
+            context.read<ChatBloc>().add(SubscribeToChatListUpdatesEvent());
           }
         }
       },

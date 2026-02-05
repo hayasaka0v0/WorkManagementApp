@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:learning/core/error/failures.dart';
 import 'package:learning/features/chat/data/models/chat_room_model.dart';
 import 'package:learning/features/chat/data/models/message_model.dart';
@@ -20,6 +21,9 @@ abstract class ChatRemoteDataSource {
 
   /// Subscribe to real-time messages in a chat room
   Stream<List<MessageModel>> subscribeToMessages(String roomId);
+
+  /// Subscribe to ANY new message
+  Stream<MessageModel> subscribeToAllMessages();
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
@@ -254,5 +258,26 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
           return messages;
         });
+  }
+
+  @override
+  Stream<MessageModel> subscribeToAllMessages() {
+    final controller = StreamController<MessageModel>();
+
+    supabaseClient
+        .channel('public:messages')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'messages',
+          callback: (payload) {
+            if (payload.newRecord != null) {
+              controller.add(MessageModel.fromJson(payload.newRecord!));
+            }
+          },
+        )
+        .subscribe();
+
+    return controller.stream;
   }
 }
